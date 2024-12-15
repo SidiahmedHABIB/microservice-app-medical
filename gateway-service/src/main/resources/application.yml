@@ -1,0 +1,39 @@
+spring:
+  application:
+    name: gateway-service
+  cloud:
+    gateway:
+      routes:
+        - id: patient-service
+          uri: http://localhost:8091/
+          predicates:
+            - Path=/api/patient/**
+        - id: medicin-service
+          uri: http://localhost:8092/
+          predicates:
+            - Path=/api/medecin/**
+      discovery:
+        locator:
+          lower-case-service-id: true
+    discovery:
+      enabled: true
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:8080/realms/tp_spring_realm
+          jwk-set-uri: ${spring.security.oauth2.resourceserver.jwt.issuer-uri}/protocol/openid-connect/certs
+token:
+  converter:
+    resource-id: gateway-service
+    principal-attribute: preferred_username
+
+server:
+  port: 8888
+
+eureka:
+  instance:
+    ip-address: true
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka
